@@ -1,4 +1,4 @@
-import { useState, Dispatch, SetStateAction, ChangeEvent } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { useTimeTracker } from "../context/TimeTrackerContext";
 import { TimeEntry } from "../types/TimeEntry";
 import TimeEntryItem from "./TimeEntryItem";
@@ -9,15 +9,6 @@ interface TimeEntryListProps {
 
 function TimeEntryList({ setCurrentEntry }: TimeEntryListProps) {
   const { entries, getTotalHours } = useTimeTracker();
-  const [search, setSearch] = useState<string>("");
-
-  const filteredEntries = entries.filter((entry: TimeEntry) => 
-    entry.taskName.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    setSearch(e.target.value);
-  };
 
   const formatTotalHours = (hours: number): string => {
     const h = Math.floor(hours);
@@ -31,21 +22,12 @@ function TimeEntryList({ setCurrentEntry }: TimeEntryListProps) {
         <div className="total-hours">
           Total Time: {formatTotalHours(getTotalHours())}
         </div>
-        <div className="filters">
-          <input
-            type="text"
-            placeholder="Search tasks"
-            value={search}
-            onChange={handleSearchChange}
-            className="search-input"
-          />
-        </div>
       </div>
       <div className="entries-container">
-        {filteredEntries.length === 0 ? (
+        {entries.length === 0 ? (
           <div className="no-entries">No time entries found</div>
         ) : (
-          filteredEntries.map((entry: TimeEntry) => (
+          entries.map((entry: TimeEntry) => (
             <TimeEntryItem key={entry.id} entry={entry} setCurrentEntry={setCurrentEntry} />
           ))
         )}

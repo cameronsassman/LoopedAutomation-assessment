@@ -1,6 +1,6 @@
 # Time Tracker
 
-Track work hours by entering start/end times or hours directly.
+A React app for tracking work hours with start/end times or direct hour entry.
 
 ## Setup
 
@@ -14,16 +14,17 @@ Open http://localhost:3000
 ## Usage
 
 1. Enter task name
-2. Set times or toggle to enter hours
+2. Enter hours directly (24-hour format)
 3. Click "Add Entry"
+4. Edit/delete entries as needed
 
-## Notes
+## Assumptions
 
-- Data resets on page refresh (no saving)
-- Time format is 24-hour (18:30 not 6:30 PM)
+- Data resets on page refresh
+- 24-hour time format (18:30 not 6:30 PM)
 
-## Would improve
+## Would Improve With More Time
 
-- Save data permanently
-- Add a running timer
-- Export to spreadsheet
+- Add localStorage
+- Implement live timer for current active tasks
+- Task filtering
