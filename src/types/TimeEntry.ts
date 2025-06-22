@@ -4,5 +4,6 @@ export interface TimeEntry {
   hoursWorked: number;
   date: string;
   isActive: boolean;
-  startTime?: number;
+  startTime?: string;
+  endTime?: string;
 }

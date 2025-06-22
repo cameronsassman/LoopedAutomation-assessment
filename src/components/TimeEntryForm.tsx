@@ -1,7 +1,6 @@
 import { useState, FormEvent, Dispatch, SetStateAction } from "react";
 import { useTimeTracker } from "../context/TimeTrackerContext";
 import { TimeEntry } from "../types/TimeEntry";
-// import "./TimeEntryForm.css";
 
 interface TimeEntryFormProps {
   currentEntry: TimeEntry | null;
@@ -9,11 +8,34 @@ interface TimeEntryFormProps {
 }
 
 function TimeEntryForm({ currentEntry, setCurrentEntry }: TimeEntryFormProps) {
-  const { addEntry, editEntry, startTimer } = useTimeTracker();
+  const { addEntry, editEntry } = useTimeTracker();
   const [taskName, setTaskName] = useState<string>(currentEntry ? currentEntry.taskName : "");
   const [hoursWorked, setHoursWorked] = useState<string>(
     currentEntry ? currentEntry.hoursWorked.toString() : ""
   );
+  const [startTime, setStartTime] = useState<string>(currentEntry?.startTime || "");
+  const [endTime, setEndTime] = useState<string>(currentEntry?.endTime || "");
+  const [useTimeRange, setUseTimeRange] = useState<boolean>(
+    !!(currentEntry?.startTime && currentEntry?.endTime)
+  );
+
+  const calculateHoursFromTimeRange = (start: string, end: string): number => {
+    if (!start || !end) return 0;
+    
+    const [startHour, startMin] = start.split(':').map(Number);
+    const [endHour, endMin] = end.split(':').map(Number);
+    
+    const startMinutes = startHour * 60 + startMin;
+    let endMinutes = endHour * 60 + endMin;
+    
+    // Handle overnight shifts
+    if (endMinutes < startMinutes) {
+      endMinutes += 24 * 60;
+    }
+    
+    const diffMinutes = endMinutes - startMinutes;
+    return Number((diffMinutes / 60).toFixed(2));
+  };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -22,28 +44,63 @@ function TimeEntryForm({ currentEntry, setCurrentEntry }: TimeEntryFormProps) {
       return;
     }
 
-    const hours = parseFloat(hoursWorked) || 0;
+    let hours: number;
+    let finalStartTime: string | undefined;
+    let finalEndTime: string | undefined;
+
+    if (useTimeRange && startTime && endTime) {
+      hours = calculateHoursFromTimeRange(startTime, endTime);
+      finalStartTime = startTime;
+      finalEndTime = endTime;
+      
+      if (hours <= 0) {
+        alert("End time must be after start time");
+        return;
+      }
+    } else {
+      hours = parseFloat(hoursWorked) || 0;
+      if (hours <= 0) {
+        alert("Hours worked must be greater than 0");
+        return;
+      }
+    }
 
     if (currentEntry) {
-      editEntry(currentEntry.id, taskName, hours);
+      editEntry(currentEntry.id, taskName, hours, finalStartTime, finalEndTime);
       setCurrentEntry(null);
     } else {
-      addEntry(taskName, hours);
+      addEntry(taskName, hours, finalStartTime, finalEndTime);
     }
     
     setTaskName("");
     setHoursWorked("");
+    setStartTime("");
+    setEndTime("");
+    setUseTimeRange(false);
   };
 
-  const handleStartTimer = (): void => {
-    if (!taskName.trim()) {
-      alert("Task name cannot be empty");
-      return;
+  const handleTimeRangeToggle = (enabled: boolean) => {
+    setUseTimeRange(enabled);
+    if (enabled && startTime && endTime) {
+      const calculatedHours = calculateHoursFromTimeRange(startTime, endTime);
+      setHoursWorked(calculatedHours.toString());
     }
-    
-    startTimer(taskName);
-    setTaskName("");
-    setHoursWorked("");
+  };
+
+  const handleTimeChange = (type: 'start' | 'end', value: string) => {
+    if (type === 'start') {
+      setStartTime(value);
+      if (useTimeRange && endTime) {
+        const calculatedHours = calculateHoursFromTimeRange(value, endTime);
+        setHoursWorked(calculatedHours.toString());
+      }
+    } else {
+      setEndTime(value);
+      if (useTimeRange && startTime) {
+        const calculatedHours = calculateHoursFromTimeRange(startTime, value);
+        setHoursWorked(calculatedHours.toString());
+      }
+    }
   };
 
   return (
@@ -56,23 +113,38 @@ function TimeEntryForm({ currentEntry, setCurrentEntry }: TimeEntryFormProps) {
           placeholder="Enter task name"
           className="task-input"
         />
-        <input
-          type="number"
-          step="0.25"
-          min="0"
-          value={hoursWorked}
-          onChange={(e) => setHoursWorked(e.target.value)}
-          placeholder="Hours worked"
-          className="hours-input"
-        />
+        
+        <div className="time-input-section">
+            <div className="time-range-inputs">
+              <div className="time-input-group">
+                <label>Start Time</label>
+                <input
+                  type="time"
+                  value={startTime}
+                  onChange={(e) => handleTimeChange('start', e.target.value)}
+                  className="time-input"
+                />
+              </div>
+              <div className="time-input-group">
+                <label>End Time</label>
+                <input
+                  type="time"
+                  value={endTime}
+                  onChange={(e) => handleTimeChange('end', e.target.value)}
+                  className="time-input"
+                />
+              </div>
+              {startTime && endTime && (
+                <div className="calculated-hours">
+                  {calculateHoursFromTimeRange(startTime, endTime).toFixed(2)} hours
+                </div>
+              )}
+            </div>
+        </div>
+        
         <button type="submit" className="add-btn">
           {currentEntry ? "Update" : "Add Entry"}
         </button>
-        {!currentEntry && (
-          <button type="button" onClick={handleStartTimer} className="timer-btn">
-            Start Timer
-          </button>
-        )}
       </form>
     </div>
   );

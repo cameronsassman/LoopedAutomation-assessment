@@ -1,13 +1,11 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 import { TimeEntry } from "../types/TimeEntry";
 
 interface TimeTrackerContextType {
   entries: TimeEntry[];
-  addEntry: (taskName: string, hoursWorked: number) => void;
-  editEntry: (id: number, taskName: string, hoursWorked: number) => void;
+  addEntry: (taskName: string, hoursWorked: number, startTime?: string, endTime?: string) => void;
+  editEntry: (id: number, taskName: string, hoursWorked: number, startTime?: string, endTime?: string) => void;
   deleteEntry: (id: number) => void;
-  startTimer: (taskName: string) => void;
-  stopTimer: (id: number) => void;
   getTotalHours: () => number;
 }
 
@@ -19,86 +17,30 @@ interface TimeTrackerProviderProps {
 
 export function TimeTrackerProvider({ children }: TimeTrackerProviderProps) {
   const [entries, setEntries] = useState<TimeEntry[]>([]);
-  const [activeTimer, setActiveTimer] = useState<number | null>(null);
 
-  // Update active timer every second
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    
-    if (activeTimer) {
-      interval = setInterval(() => {
-        setEntries(prevEntries =>
-          prevEntries.map(entry =>
-            entry.id === activeTimer && entry.isActive && entry.startTime
-              ? {
-                  ...entry,
-                  hoursWorked: Number(((Date.now() - entry.startTime) / (1000 * 60 * 60)).toFixed(2))
-                }
-              : entry
-          )
-        );
-      }, 1000);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [activeTimer]);
-
-  const addEntry = (taskName: string, hoursWorked: number): void => {
+  const addEntry = (taskName: string, hoursWorked: number, startTime?: string, endTime?: string): void => {
     const newEntry: TimeEntry = {
       id: Date.now(),
       taskName,
       hoursWorked,
       date: new Date().toLocaleDateString(),
-      isActive: false
+      isActive: false,
+      startTime,
+      endTime
     };
     setEntries([...entries, newEntry]);
   };
 
-  const editEntry = (id: number, taskName: string, hoursWorked: number): void => {
+  const editEntry = (id: number, taskName: string, hoursWorked: number, startTime?: string, endTime?: string): void => {
     setEntries(
       entries.map((entry) =>
-        entry.id === id ? { ...entry, taskName, hoursWorked } : entry
+        entry.id === id ? { ...entry, taskName, hoursWorked, startTime, endTime } : entry
       )
     );
   };
 
   const deleteEntry = (id: number): void => {
-    if (activeTimer === id) {
-      setActiveTimer(null);
-    }
     setEntries(entries.filter((entry) => entry.id !== id));
-  };
-
-  const startTimer = (taskName: string): void => {
-    // Stop any existing active timer
-    if (activeTimer) {
-      stopTimer(activeTimer);
-    }
-
-    const newEntry: TimeEntry = {
-      id: Date.now(),
-      taskName,
-      hoursWorked: 0,
-      date: new Date().toLocaleDateString(),
-      isActive: true,
-      startTime: Date.now()
-    };
-    
-    setEntries([...entries, newEntry]);
-    setActiveTimer(newEntry.id);
-  };
-
-  const stopTimer = (id: number): void => {
-    setEntries(prevEntries =>
-      prevEntries.map(entry =>
-        entry.id === id && entry.isActive
-          ? { ...entry, isActive: false, startTime: undefined }
-          : entry
-      )
-    );
-    setActiveTimer(null);
   };
 
   const getTotalHours = (): number => {
@@ -107,7 +49,7 @@ export function TimeTrackerProvider({ children }: TimeTrackerProviderProps) {
 
   return (
     <TimeTrackerContext.Provider
-      value={{ entries, addEntry, editEntry, deleteEntry, startTimer, stopTimer, getTotalHours }}
+      value={{ entries, addEntry, editEntry, deleteEntry, getTotalHours }}
     >
       {children}
     </TimeTrackerContext.Provider>

@@ -16,27 +16,25 @@ h1 {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* src/components/TimeEntryForm/TimeEntryForm.css */
+/* Time Entry Form Styles */
 .time-entry-form-container {
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
   margin-bottom: 30px;
 }
 
 .time-entry-form {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-direction: column;
+  gap: 20px;
   background-color: white;
-  padding: 20px;
+  padding: 25px;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
 }
 
 .task-input {
-  flex: 2;
-  min-width: 200px;
   padding: 12px;
   border: 2px solid #e1e5e9;
   border-radius: 8px;
@@ -49,14 +47,87 @@ h1 {
   border-color: #667eea;
 }
 
-.hours-input {
-  flex: 1;
+.time-input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.time-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-toggle label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #4a5568;
+  cursor: pointer;
+}
+
+.time-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #667eea;
+}
+
+.time-range-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: end;
+}
+
+.time-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   min-width: 120px;
+}
+
+.time-input-group label {
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.time-input {
   padding: 12px;
   border: 2px solid #e1e5e9;
   border-radius: 8px;
   font-size: 16px;
   transition: border-color 0.3s ease;
+  background: white;
+}
+
+.time-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.calculated-hours {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.hours-input {
+  padding: 12px;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+  max-width: 200px;
 }
 
 .hours-input:focus {
@@ -64,7 +135,7 @@ h1 {
   border-color: #667eea;
 }
 
-.add-btn, .timer-btn {
+.add-btn {
   padding: 12px 20px;
   border: none;
   border-radius: 8px;
@@ -72,11 +143,9 @@ h1 {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-}
-
-.add-btn {
   background: linear-gradient(45deg, #4CAF50, #45a049);
   color: white;
+  align-self: flex-start;
 }
 
 .add-btn:hover {
@@ -84,17 +153,7 @@ h1 {
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
 
-.timer-btn {
-  background: linear-gradient(45deg, #2196F3, #1976D2);
-  color: white;
-}
-
-.timer-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
-}
-
-/* src/components/TimeEntryItem/TimeEntryItem.css */
+/* Time Entry Item Styles */
 .time-entry-item {
   display: flex;
   justify-content: space-between;
@@ -111,11 +170,6 @@ h1 {
 .time-entry-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.time-entry-item.active {
-  border-left-color: #4CAF50;
-  background: linear-gradient(135deg, #f8fff8 0%, #e8f5e8 100%);
 }
 
 .entry-info {
@@ -145,20 +199,19 @@ h1 {
   border-radius: 20px;
 }
 
+.time-range {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a5568;
+  background: #f7fafc;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+}
+
 .date {
   font-size: 14px;
   color: #666;
-}
-
-.status-badge {
-  background: linear-gradient(45deg, #4CAF50, #45a049);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .actions {
@@ -174,16 +227,6 @@ h1 {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-}
-
-.stop-btn {
-  background: linear-gradient(45deg, #FF5722, #E64A19);
-  color: white;
-}
-
-.stop-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
 }
 
 .edit-btn {
@@ -206,7 +249,7 @@ h1 {
   box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
 }
 
-/* src/components/TimeEntryList/TimeEntryList.css */
+/* Time Entry List Styles */
 .time-entry-list {
   width: 100%;
   max-width: 800px;
@@ -241,28 +284,6 @@ h1 {
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
-}
-
-.filters button {
-  padding: 10px 20px;
-  background-color: #f8f9fa;
-  color: #666;
-  border: 2px solid #e1e5e9;
-  border-radius: 25px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.filters button:hover {
-  background-color: #e9ecef;
-  transform: translateY(-1px);
-}
-
-.filters button.active {
-  background: linear-gradient(45deg, #667eea, #764ba2);
-  color: white;
-  border-color: #667eea;
 }
 
 .search-input {
@@ -306,40 +327,35 @@ h1 {
   font-style: italic;
 }
 
-/* src/index.css */
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-* {
-  box-sizing: border-box;
-}
-
+/* Responsive Design */
 @media (max-width: 768px) {
-  .time-entry-form {
-    flex-direction: column;
-  }
-  
-  .task-input, .hours-input {
-    min-width: 100%;
-  }
-  
-  .filters {
+  .time-range-inputs {
     flex-direction: column;
     align-items: stretch;
   }
   
-  .search-input {
+  .time-input-group {
     min-width: 100%;
+  }
+  
+  .calculated-hours {
+    min-width: 100%;
+  }
+  
+  .entry-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .actions {
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  .time-entry-item {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
