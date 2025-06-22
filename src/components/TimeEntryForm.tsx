@@ -15,9 +15,7 @@ function TimeEntryForm({ currentEntry, setCurrentEntry }: TimeEntryFormProps) {
   );
   const [startTime, setStartTime] = useState<string>(currentEntry?.startTime || "");
   const [endTime, setEndTime] = useState<string>(currentEntry?.endTime || "");
-  const [useTimeRange, setUseTimeRange] = useState<boolean>(
-    !!(currentEntry?.startTime && currentEntry?.endTime)
-  );
+  const [useTimeRange, setUseTimeRange] = useState<boolean>(true);
 
   const calculateHoursFromTimeRange = (start: string, end: string): number => {
     if (!start || !end) return 0;
@@ -63,6 +61,9 @@ function TimeEntryForm({ currentEntry, setCurrentEntry }: TimeEntryFormProps) {
         alert("Hours worked must be greater than 0");
         return;
       }
+      // Clear start/end times if not using time range
+      finalStartTime = undefined;
+      finalEndTime = undefined;
     }
 
     if (currentEntry) {
@@ -77,14 +78,6 @@ function TimeEntryForm({ currentEntry, setCurrentEntry }: TimeEntryFormProps) {
     setStartTime("");
     setEndTime("");
     setUseTimeRange(false);
-  };
-
-  const handleTimeRangeToggle = (enabled: boolean) => {
-    setUseTimeRange(enabled);
-    if (enabled && startTime && endTime) {
-      const calculatedHours = calculateHoursFromTimeRange(startTime, endTime);
-      setHoursWorked(calculatedHours.toString());
-    }
   };
 
   const handleTimeChange = (type: 'start' | 'end', value: string) => {
